@@ -10,7 +10,10 @@ const dotenv= require("dotenv").config();
 const logger=require("./middlewares/logger");
 const {notfound,errorhandler}=require("./middlewares/erros");    
 const connectToDB = require("./config/db.JS");
-const path = require("path")
+const path = require("path");
+const helmet =require("helmet");
+const cors=reuiqre("cors");
+
 
 
 // connection to database
@@ -29,6 +32,14 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(logger);
 
+//helmet
+app.use(helmet());
+//cors policy
+app.use(cors({
+    origin:"http"
+}));
+
+//set view engine
 app.set('view engine','ejs'); 
 
 //ROUTER

@@ -3,79 +3,13 @@ const {Author,validateCreateAuthor,validateUpdateAuthor}= require("../models/Aut
 const router =express.Router();
 const joi = require("joi");
 const asyncHandler=require("express-async-handler");
-const {verifyTokenAndAdmin}=require("../middlewares/verifytoken")
+const {verifyTokenAndAdmin}=require("../middlewares/verifytoken");
+const { getAllAuthors, getAuthorById, createAuthor, updateAuthor, deleteAuthor } = require("../controlls/authorsController");
 
-router.get("/", asyncHandler(
-    async (req,res)=>{
+// api/authors
+router.route("/").get(getAllAuthors).post(createAuthor);
 
-        //const authorsList = await Author.find().sort({firstname:1}).select("firstname age -_id");
-        const authorsList = await Author.find()
-        res.status(200).json(authorsList);
-    }
-   
-));
+// api/authots/;id
+router.route("/:id").get(getAuthorById).put(verifyTokenAndAdmin,updateAuthor).delete(verifyTokenAndAdmin,deleteAuthor);
 
-router.get("/:id",asyncHandler(
-
-    async(req,res)=>{const author = await Author.findById(req.params.id);
-    if(author){
-        res.status(200).json(author);
-    }else{
-        res.status(404).json({ message : "author not found "});
-    }
-
-}));
-
-router.post("/",verifyTokenAndAdmin,asyncHandler(
-    async (req,res)=>{
-    const {error }= validateCreateAuthor(req.body);
-
-    if(error){
-        return res.status(400).json({ message : error.details[0].message});
-    }
-
-    const author =new Author({
-        firstname:req.body.firstname,
-        age:req.body.age,
-        nationality:req.body.nationality,
-    });
-
-    const result = await author.save();
-    res.status(201).json(result);
- 
-}));
-
-router.put("/:id",verifyTokenAndAdmin,asyncHandler(
-    async(req,res)=>{
-    const {error} =validateUpdateAuthor(req.body);
-    if(error){
-     return res.status(400).json({message: error.details[0].message});
-    }
-  
-    const author = await Author.findByIdAndUpdate(req.params.id,{
-     $set:{
-         firstname:req.body.firstname,
-         age:req.body.age,
-         nationality:req.body.nationality
-     }
-    },{new:true})
-    
-    res.status(200).json(author);
-  
- }));
-
-router.delete("/:id",verifyTokenAndAdmin,asyncHandler(
-    async (req,res)=>{
-
-    const author = await Author.findById(req.params.id);
-    if(author){
-        await Author.findByIdAndDelete(req.params.id);
-     return res.status(200).json({message: " author has been deleted"});
-    }else{
-     return res.status(404).json({message:" author not found"});
-    }
-
-
- }));
-
-module.exports=router;
+module.exports=router; 

@@ -1,5 +1,5 @@
 const asynchandler = require("express-async-handler");
-const {User}=require("../models/User");
+const {User,validatechangepassword}=require("../models/User");
 const jwt =require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const nodemailer = require ("nodemailer")
@@ -13,6 +13,10 @@ module.exports.getforgotpassword = asynchandler((req,res)=>{
 });
 
 module.exports.sendforgotpaswordlink = asynchandler( async (req,res)=>{
+    const {error}=validatechangepassword(req.body);
+    if(error){
+        res.status(400).json({meessage :"error"})
+    }
     const user = await User.findOne({email: req.body.email});
     if(!user){
         return res.status(404).json({message : "user not found"});
@@ -39,6 +43,7 @@ module.exports.sendforgotpaswordlink = asynchandler( async (req,res)=>{
     transporter.sendMail(mailOptions,function(error,success){
         if(error){
             console.log(error);
+            res.status(500).json({message:'some thing went wrong'})
         }else{
             console.log("email sent:"+success.response);
         }

@@ -60,6 +60,12 @@ function validationLOginUser(obj){
     });
     return schema.validate(obj);
 }
+function validatechangepassword(obj){
+    const schema= joi.object({
+        password: joi.string().trim().min(6).required(),
+    });
+    return schema.validate(obj);
+}
 // validate update user
 function validationUpdatedUser(obj){
     const schema= joi.object({
@@ -73,5 +79,5 @@ function validationUpdatedUser(obj){
 
 
 module.exports = {
-       User, validationLOginUser,validationRegisterUser,validationUpdatedUser
+       User, validationLOginUser,validationRegisterUser,validationUpdatedUser,validatechangepassword
 }
